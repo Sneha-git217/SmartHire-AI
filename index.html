@@ -1,0 +1,90 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SmartHire AI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <div class="brand">SmartHire <span>AI</span></div>
+    <div class="tag">Resume Analyzer & Job Matcher</div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <p class="pill">AI PROJECT • RESUME ANALYSIS</p>
+      <h1>Find out how well your resume matches a job.</h1>
+      <p>Upload your resume, paste a job description, and get a transparent compatibility score, skill gaps and interview questions.</p>
+    </section>
+
+    <section class="card">
+      <form method="POST" enctype="multipart/form-data">
+        <label>1. Upload your resume (PDF)</label>
+        <input type="file" name="resume" accept=".pdf" required>
+
+        <label>2. Paste the job description</label>
+        <textarea name="job_description" rows="10" placeholder="Paste the job description here..." required></textarea>
+
+        <button type="submit">Analyze Resume →</button>
+      </form>
+      {% if error %}<div class="error">{{ error }}</div>{% endif %}
+    </section>
+
+    {% if result %}
+    <section class="results">
+      <div class="score-card card">
+        <div class="score">{{ result.overall }}%</div>
+        <div>
+          <h2>Compatibility Score</h2>
+          <p>Based on skills (70%) and job-related keywords (30%).</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Matched Skills</h3>
+          <div class="chips">
+            {% for s in result.matched %}<span class="chip good">✓ {{ s }}</span>{% else %}<span>No direct skill matches found.</span>{% endfor %}
+          </div>
+        </div>
+        <div class="card">
+          <h3>Missing Skills</h3>
+          <div class="chips">
+            {% for s in result.missing %}<span class="chip bad">! {{ s }}</span>{% else %}<span>No major missing skills detected.</span>{% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Score Breakdown</h3>
+          <p>Skill match: <strong>{{ result.skill_score }}%</strong></p>
+          <div class="bar"><i style="width:{{ result.skill_score }}%"></i></div>
+          <p>Keyword match: <strong>{{ result.keyword_score }}%</strong></p>
+          <div class="bar"><i style="width:{{ result.keyword_score }}%"></i></div>
+        </div>
+        <div class="card">
+          <h3>AI Recommendations</h3>
+          <ul>{% for r in result.recommendations %}<li>{{ r }}</li>{% endfor %}</ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Interview Questions</h3>
+        <ol>{% for q in result.questions %}<li>{{ q }}</li>{% endfor %}</ol>
+      </div>
+
+      <div class="card">
+        <h3>Implementation Note</h3>
+        <p>This prototype uses PDF text extraction plus a transparent NLP-style skill/keyword matching algorithm. The weighted score is designed so the evaluation logic can be explained clearly in the project report.</p>
+      </div>
+    </section>
+    {% endif %}
+  </main>
+
+  <footer>SmartHire AI • Academic Project Prototype</footer>
+</body>
+</html>
